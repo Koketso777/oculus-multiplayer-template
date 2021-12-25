@@ -1,0 +1,149 @@
+2.5
+
+Fixed default index finger curl weight to account for controllers without trigger touch.
+Fixed an issue with grab point's that limited which hand could grab it would allow it anyway when there were multiple grab points in the same group.
+
+Force Grabber:
+	Any amount of grab points can be hit instead of one. If the grab point allows, the closest by position and rotation will be used.
+	GrabPoser: Pose animated while an object is being force grabbed.
+	HoverPoser: Pose animated while the force grabber is hovering over a grabbable.
+	
+Hand Grabber:
+	ApplyHandLayer: optionally applies default hand layer on start, defaulted to true.
+	GrabPoser: Pose animated while an object is being force grabbed.
+	HoverPoser: Pose animated while hovering.
+	New Grab(grabbable, grabTrigger, grabPoint) Method: For use with objects with poses assigned, will automatically bring the object to the correct orientation relative to the hand.
+
+HVRJointSettings - Updated to allow Position, Rotation, or Position and Rotation drives to be assigned.
+HVRPlayerController - Optional NeckPivot transform, if supplied will control HMD -> Player movement. Default rig updated with neck pivot camera child.
+HVRTeleporter: New Teleport(position, direction) method to manually teleport the player in code, handling held objects and collision after. Demo scene updated with example usage.
+HVRGrabbable - SocketGrabPoints field can be populated to limit what pose will be used, if empty all poses are valid.
+HVRPosableHand and HVRPosableGrabPoint - added PoserIndex which will allow objects to have grab points that can be grabbed by different hand rigs.
+HVRGrabPointSwapper - updated to handle multiple Posable Hand Indices.
+HVRDamageHandler: Added HandleRayCastHit(HVRDamageProvider damageProvider, RaycastHit hit)
+HVRCameraRig: Added SaveCalibrationHeight option that is useful for rapid debugging without having to manually calibrate in game.
+
+Default hand strength has been adjusted to be more responsive, with a more realistic max force value.
+
+HexaBody Integration - updated to match latest HexaBody asset update for hand responsiveness when turning.
+
+Examples Updates:
+	-TechDemoRig updated with force and hand grabber hover / grab poses.
+	-Code driven grabbing of object which handles pose orientation and (mostly) post grab collision detection.
+	-Code driven teleporting of player and held object to a position and facing specified direction.
+	-Demo Weapons have had their grip hand strength settings removed and recoil values have been adjusted.
+		Up Recoil position moved further forward to cause rotational torque instead of upward force.
+	-HVRGrabbable SocketGrabPoints  example
+	-Holster scale size set to 1.7
+	FinalIK integration updated with animation legs from the latest FinalIK version.
+	Added OpenXR Variant of the TechDemoRig with input system tracked drivers.
+	Mjolnir has received a major buff.
+
+2.4.6 Updates
+
+New Example scene:
+ Updated holsters which allow the knife / pistol in
+ Added climbing, gun range, Auto collecting chest for socketables
+ 
+Default poser hands updated to the new human hands.
+HVRControllerOffset: Added Teleport transform field which you can supply the transform that is used to determine the teleport line direction. Rig prefabs updated. 
+					 Grab point offsets will be inversely applied to the teleport transform so that holding a rotation offset grabpoint will no longer affect the teleport line direction.
+
+2.4.5 <
+
+Set execution order of the physics hands to be after the player controller to smooth out hand movements when starting and stopping quickly.
+Fixed Hexa integration keyboard checks when using both input systems.
+Revert changes caused by v1.1.1 of Unity input system update to mitigate compilation errors.
+Reapply finger curls to all blend states if they are enabled.
+Added support for Unity Input System keyboard / mouse debug buttons that were previously old input system only.
+Player Controller initial HMD check is improved, optional param "InitialHMDAdjustment", and doesn't prevent the Update loop from executing if HMD is not detected.
+Fixed HVRGrabPointSwapper for FinalIK, bad position offset while swapping, smoothed out rotation.
+Fixed LineGrab hand rotation issue when LineInitialCanRotate was false.
+
+Release 2.4
+
+Fixed issue where FullStab would be invoked when the stabber was exiting the stabbable.
+Stabber / Stabbable Stabbed event signature changed. 
+Demo scene updated with stabbing system demonstration.
+HexaBodyVR Integration updated with support for the new HexaBodyV4 release.
+
+
+New HVRGrabPointSwapper - cycle through any number of defined grabpoints. Placed on HVRGrabbable object.	
+	CombatKnife added to the new demo scene with this feature.
+
+References to "WMRWithButtons" replaced with ReverbG2
+
+HVRHandAnimator: 
+	Completely reworked to allow smooth movement into and out of every pose. Speed is determined by the primary pose speed value.
+	Float driven blend poses no longer smooth lerp, they take affect immediately. IE grip / trigger pull etc. 
+	Eliminated GC allocation caused when swapping out hand poses.
+
+Controller Offsets:
+	Due to controller offsets not being consistent between Unity, SteamVR, and OpenXR a new Scriptable Object "HVRControllerOffsets" is added.
+	Each major device has customizable position and rotation offsets per Input Plugin.
+	HVRInputManager - Added "ControllerOffsets" field referencing the new SO. HVRGlobal prefab is updated with a default offset file.
+	Offset fields have been removed from the HVRInputSettings scriptable object.
+	Default OpenXR offsets are based on the Pointer / Aim poses.
+	
+Finger Curl Settings:
+	The HVRFingerSettings Scriptable Object has been re-worked to have per finger weights for each of the capactive touch buttons as well as grip / trigger values.
+	This will allow you to modify the influence of each button on each finger without having to make code changes.
+	Knuckles finger tracking can optionally be ignored to use the Grip values like other controllers, useful for OpenXR as finger tracking is not yet implemented there.
+	HVRGlobal prefab HVRInputManager component is updated with a new default reference.
+
+Input Changes:
+	Added GripForce to HVRController for Valve Knuckles which is populated from updated SteamVR and OpenXR bindings.
+	HVRInputSettings / HVRController - updated to allow Grip and Trigger buttons to have an optional release threshold which can be greater or lower than the activation threshold.
+	Knuckles SteamVR bindings are updated to read the Grip and GripForce values.
+	Knuckles HVRInputSettings default Grip button setting has been changed to Analog with Threshold > .95 and Release < .6.
+
+OpenXR Controller Setup:
+	New HVRTrackedPoseDriver component, can be added to the controller transforms and will automatically make use of included controller pose bindings.
+	
+
+
+Release 2.31
+
+Fixed HVRPhysicsButton sometimes having a non zero anchor.
+
+HVRPosableGrabPoint:
+	OneHandOnly - if true only one hand can hold the grab point 
+	LineInitialCanReposition - if false the hand will grab where the pose is defined for line grabs
+	LineInitialCanRotate - if false the hand will be oriented where the pose is defined for line grabs
+	
+Tech Demo Examples Scene:
+	Added Grab Point Examples for Line Grab, OneHandOnly, Groups, LeftHand / RightHand only grabs, Hand rotation offset
+	
+
+Release 2.3
+
+Fixed critical issue with teleporting where the left hand would move incorrectly.
+Fixed backpack socket on new tech demo rig.
+Fixed pose helper window for smaller screens by adding scrollview.
+Fixed an issue where socketed objects with sockets would affect choosing a closer socket.
+Fixed ammo count on HVRAmmo from not being public
+
+Line Grabbing:
+	Disabling LineCanRotate will now align the initial grab with the defined pose rotation in addition to preventing rotation when only holding trigger.
+	Line Grabs no longer need to be aligned with the up vector of the physics hand, any orientation of the line is now allowed.
+	Added LineFreeRotation (bool) to HVRPosableGrabPoint : if set to true the hand will always rotate freely about the defined line axis.
+
+Socket Filter Updates:
+	Added new Scriptable Object "HVRSocketableTags" - user can define up to 32 tags in this scriptable object without programming experience.
+	Tags can be assigned to HVRTagSocketable and HVRTagSocketFilter which will cause a drop down to present itself for tag selection.
+	Bitmasking is used to maintain efficient socket filtering.
+	HVRSettings added "DefaultSocketableTags" - user can assign the default tag scriptable object that will auto populate in new filters / socketables when the component is added.
+	New Demo Scenes updated to use this new tag filter system.
+
+HVRSocketBag / HVRSocket - added DistanceSource transform field which allows users to override where distances checks are calculated from.
+HVRInputModule : Added MaxDistance field which allows the UIPointer to only take affect within that distance to the canvas.
+HVRHandGrabber:	New BreakDistanceReached event
+
+HVRPosableGrabPoint: 
+	Added Group field (int), grab points close to each other should assign to the same group, then pose rotation checks will be more effective
+	on larger objects with multiple grab points that are further apart.
+
+
+HexaBody Integration Player:
+	Performed surgery on the shoulder transforms, should be in the right place now
+	Fixed missing hand rigidbody references which are required to add the arm length limit joint 
